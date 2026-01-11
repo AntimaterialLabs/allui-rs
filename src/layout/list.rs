@@ -156,6 +156,18 @@ impl RenderOnce for List {
     fn render(self, _window: &mut Window, _cx: &mut App) -> impl IntoElement {
         let config = self.build_configuration();
         let section_spacing = self.section_spacing.resolve(self.style);
+        let row_spacing = self.default_row_spacing.unwrap_or(0.0);
+
+        let has_sections = self
+            .children
+            .iter()
+            .any(|c| matches!(c, ListChild::Section(_)));
+
+        let effective_gap = if has_sections {
+            section_spacing
+        } else {
+            row_spacing
+        };
 
         let mut base = div()
             .id(self.id)
@@ -163,7 +175,7 @@ impl RenderOnce for List {
             .min_h_0()
             .flex()
             .flex_col()
-            .gap(px(section_spacing));
+            .gap(px(effective_gap));
 
         base = match self.style {
             ListStyle::Automatic | ListStyle::Plain => base,
