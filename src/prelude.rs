@@ -8,10 +8,11 @@
 
 // Layout primitives
 pub use crate::layout::{
-    Alignment, EmptyView, ForEach, Grid, GridItem, GridItemSize, GridRow, Group, HStack,
-    HorizontalAlignment, If, IfLet, LazyHGrid, LazyHStack, LazyVGrid, LazyVStack, List, ListStyle,
-    ScrollAxes, ScrollView, Section, Spacer, VStack, VerticalAlignment, VirtualListScrollHandle,
-    ZStack,
+    Alignment, EdgeInsets, EdgeInsetsExt, EdgeSet, EmptyView, ForEach, Grid, GridItem,
+    GridItemSize, GridRow, Group, HStack, HorizontalAlignment, If, IfLet, LazyHGrid, LazyHStack,
+    LazyVGrid, LazyVStack, List, ListSectionSpacing, ListStyle, RowConfiguration, ScrollAxes,
+    ScrollView, Section, SectionMargins, Spacer, VStack, VerticalAlignment,
+    VirtualListScrollHandle, ZStack,
 };
 
 // Display components

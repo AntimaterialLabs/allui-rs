@@ -31,6 +31,7 @@ pub enum Story {
     DisplayComponents,
     ScrollView,
     List,
+    ListConfig,
     ForEach,
     Conditional,
     Grid,
@@ -117,6 +118,10 @@ pub fn container_stories() -> &'static [StoryInfo] {
         StoryInfo {
             name: "List",
             story: Story::List,
+        },
+        StoryInfo {
+            name: "List Config",
+            story: Story::ListConfig,
         },
         StoryInfo {
             name: "ForEach",

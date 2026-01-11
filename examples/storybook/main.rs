@@ -185,6 +185,7 @@ impl Storybook {
             Story::DisplayComponents => render_display_components_story().into_any_element(),
             Story::ScrollView => render_scrollview_story().into_any_element(),
             Story::List => render_list_story().into_any_element(),
+            Story::ListConfig => render_list_config_story().into_any_element(),
             Story::ForEach => render_foreach_story().into_any_element(),
             Story::Conditional => render_conditional_story(self, cx).into_any_element(),
             Story::Grid => render_grid_story().into_any_element(),
