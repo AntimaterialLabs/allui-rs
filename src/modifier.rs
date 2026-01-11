@@ -5,8 +5,8 @@
 //! This is necessary because GPUI's overflow clipping doesn't respect border-radius.
 
 use gpui::{
-    AnyElement, App, ClickEvent, InteractiveElement, IntoElement, ParentElement, RenderOnce,
-    SharedString, StatefulInteractiveElement, Styled, Window, div, px,
+    div, px, AnyElement, App, ClickEvent, InteractiveElement, IntoElement, ParentElement,
+    RenderOnce, SharedString, StatefulInteractiveElement, Styled, Window,
 };
 use gpui_component::ActiveTheme;
 
@@ -79,7 +79,7 @@ struct StyledContainerElement<V: IntoElement + 'static> {
 impl<V: IntoElement + 'static> RenderOnce for StyledContainerElement<V> {
     fn render(self, _window: &mut Window, cx: &mut App) -> impl IntoElement {
         let is_dark = cx.theme().is_dark();
-        let mut container = div().flex_grow();
+        let mut container = div().size_full().min_h_0().min_w_0().overflow_hidden();
 
         if let Some(color) = self.container.background {
             container = container.bg(color.resolve(is_dark));

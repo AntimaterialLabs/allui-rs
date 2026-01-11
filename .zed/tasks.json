@@ -1,0 +1,50 @@
+[
+  {
+    "label": "cargo build",
+    "command": "cargo build",
+    "use_new_terminal": false,
+    "allow_concurrent_runs": false,
+  },
+  {
+    "label": "cargo build --release",
+    "command": "cargo build --release",
+    "use_new_terminal": false,
+    "allow_concurrent_runs": false,
+  },
+  {
+    "label": "run storybook",
+    "command": "cargo run --example storybook",
+    "use_new_terminal": true,
+    "allow_concurrent_runs": false,
+  },
+  {
+    "label": "run storybook --release",
+    "command": "cargo run --example storybook --release",
+    "use_new_terminal": true,
+    "allow_concurrent_runs": false,
+  },
+  {
+    "label": "cargo clippy",
+    "command": "cargo clippy --all-targets --all-features -- -D warnings",
+    "use_new_terminal": false,
+    "allow_concurrent_runs": false,
+  },
+  {
+    "label": "cargo test",
+    "command": "cargo test",
+    "use_new_terminal": false,
+    "allow_concurrent_runs": false,
+  },
+  {
+    "label": "cargo check",
+    "command": "cargo check",
+    "use_new_terminal": false,
+    "allow_concurrent_runs": false,
+  },
+  {
+    "label": "cargo doc --open",
+    "command": "cargo doc --open --no-deps",
+    "use_new_terminal": false,
+    "allow_concurrent_runs": false,
+  },
+]

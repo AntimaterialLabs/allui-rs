@@ -1,5 +1,5 @@
-use gpui::{div, prelude::*, px, rgb};
 use allui::prelude::*;
+use gpui::{div, prelude::*, px, rgb};
 
 pub fn render_vstack_story() -> impl IntoElement {
     VStack::new()

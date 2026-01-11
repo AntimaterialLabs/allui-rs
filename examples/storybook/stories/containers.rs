@@ -1,5 +1,5 @@
-use gpui::{div, prelude::*, px, rgb, Context, SharedString};
 use allui::prelude::*;
+use gpui::{div, prelude::*, px, rgb, Context, SharedString};
 
 use crate::Storybook;
 
