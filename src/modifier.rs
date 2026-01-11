@@ -1,11 +1,12 @@
 //! Core modifier system for Allui.
 //!
-//! Every modifier wraps the view in a new container element.
-//! This is fundamental to achieving SwiftUI-like modifier ordering semantics.
+//! Modifiers wrap views in container elements, but visual modifiers (background,
+//! corner_radius, border) are merged onto a single div for correct rendering.
+//! This is necessary because GPUI's overflow clipping doesn't respect border-radius.
 
 use gpui::{
-    div, px, App, ClickEvent, InteractiveElement, IntoElement, ParentElement, RenderOnce,
-    SharedString, StatefulInteractiveElement, Styled, Window,
+    div, px, AnyElement, App, ClickEvent, InteractiveElement, IntoElement, ParentElement,
+    RenderOnce, SharedString, StatefulInteractiveElement, Styled, Window,
 };
 use gpui_component::ActiveTheme;
 
@@ -13,6 +14,99 @@ use crate::style::Color;
 use crate::types::ClickHandler;
 
 pub use crate::alignment::{Alignment, HorizontalAlignment, VerticalAlignment};
+
+/// Accumulates visual styles (background, corner_radius, border) on a single div.
+/// Required because GPUI cannot clip overflow to rounded bounds.
+pub struct StyledContainer<V> {
+    child: V,
+    background: Option<Color>,
+    corner_radius: Option<f32>,
+    border_color: Option<Color>,
+    border_width: Option<f32>,
+}
+
+impl<V> StyledContainer<V> {
+    pub fn new(child: V) -> Self {
+        Self {
+            child,
+            background: None,
+            corner_radius: None,
+            border_color: None,
+            border_width: None,
+        }
+    }
+
+    fn with_background(mut self, color: Color) -> Self {
+        self.background = Some(color);
+        self
+    }
+
+    fn with_corner_radius(mut self, radius: f32) -> Self {
+        self.corner_radius = Some(radius);
+        self
+    }
+
+    fn with_border(mut self, color: Color, width: f32) -> Self {
+        self.border_color = Some(color);
+        self.border_width = Some(width);
+        self
+    }
+
+    #[must_use]
+    pub fn corner_radius(self, radius: f32) -> Self {
+        self.with_corner_radius(radius)
+    }
+
+    #[must_use]
+    pub fn border(self, color: impl Into<Color>, width: f32) -> Self {
+        self.with_border(color.into(), width)
+    }
+}
+
+impl<V: IntoElement + 'static> IntoElement for StyledContainer<V> {
+    type Element = AnyElement;
+
+    fn into_element(self) -> Self::Element {
+        StyledContainerElement { container: self }.into_any_element()
+    }
+}
+
+#[derive(IntoElement)]
+struct StyledContainerElement<V: IntoElement + 'static> {
+    container: StyledContainer<V>,
+}
+
+impl<V: IntoElement + 'static> RenderOnce for StyledContainerElement<V> {
+    fn render(self, _window: &mut Window, cx: &mut App) -> impl IntoElement {
+        let is_dark = cx.theme().is_dark();
+        let mut container = div().size_full().min_h_0().min_w_0().overflow_hidden();
+
+        if let Some(color) = self.container.background {
+            container = container.bg(color.resolve(is_dark));
+        }
+
+        if let Some(radius) = self.container.corner_radius {
+            container = container.rounded(px(radius)).overflow_hidden();
+        }
+
+        if let Some(color) = self.container.border_color {
+            container = container.border_color(color.resolve(is_dark));
+            if let Some(width) = self.container.border_width {
+                container = if width <= 1.0 {
+                    container.border_1()
+                } else if width <= 2.0 {
+                    container.border_2()
+                } else if width <= 4.0 {
+                    container.border_4()
+                } else {
+                    container.border_8()
+                };
+            }
+        }
+
+        container.child(self.container.child)
+    }
+}
 
 /// A view that has been wrapped with a modifier.
 ///
@@ -23,41 +117,31 @@ pub struct Modified<V> {
     pub(crate) modifier: ModifierKind,
 }
 
-/// The kind of modifier being applied.
 #[derive(Clone)]
 pub enum ModifierKind {
-    /// Padding on all sides
     Padding(Padding),
-    /// Background color
-    Background(Color),
-    /// Foreground/text color
     Foreground(Color),
-    /// Corner radius
     CornerRadius(f32),
-    /// Border with color and width
-    Border { color: Color, width: f32 },
-    /// Shadow with radius
+    Border {
+        color: Color,
+        width: f32,
+    },
     Shadow {
         radius: f32,
         color: Option<Color>,
         x: f32,
         y: f32,
     },
-    /// Opacity
     Opacity(f32),
-    /// Fixed frame dimensions
     Frame(Frame),
-    /// Hide the view
     Hidden(bool),
-    /// Disable interaction
     Disabled(bool),
-    /// Scale transform
     Scale(f32),
-    /// Tint color
     Tint(Color),
-    /// Fixed size (prevent expansion)
-    FixedSize { horizontal: bool, vertical: bool },
-    /// Aspect ratio
+    FixedSize {
+        horizontal: bool,
+        vertical: bool,
+    },
     AspectRatio {
         ratio: f32,
         content_mode: ContentMode,
@@ -406,12 +490,8 @@ pub trait Modifier: Sized {
 
     // Visual modifiers
 
-    /// Set the background color.
-    fn background(self, color: impl Into<Color>) -> Modified<Self> {
-        Modified {
-            child: self,
-            modifier: ModifierKind::Background(color.into()),
-        }
+    fn background(self, color: impl Into<Color>) -> StyledContainer<Self> {
+        StyledContainer::new(self).with_background(color.into())
     }
 
     /// Set the foreground (text) color.
@@ -548,6 +628,9 @@ pub trait Modifier: Sized {
 // Implement Modifier for Modified so modifiers can be chained
 impl<V> Modifier for Modified<V> {}
 
+// Implement Modifier for StyledContainer so other modifiers can be chained
+impl<V: IntoElement + 'static> Modifier for StyledContainer<V> {}
+
 /// A view wrapped with a tap gesture handler.
 pub struct Tappable<V> {
     child: V,
@@ -619,11 +702,7 @@ impl<V: IntoElement + 'static> RenderOnce for ModifiedElement<V> {
                     .pr(px(padding.trailing))
                     .child(child)
             }
-            ModifierKind::Background(color) => {
-                // Background wrapper stretches to fill parent
-                // Resolve semantic colors based on current theme
-                div().flex_grow().bg(color.resolve(is_dark)).child(child)
-            }
+
             ModifierKind::Foreground(color) => {
                 // Resolve semantic colors based on current theme
                 div()
@@ -693,16 +772,10 @@ impl<V: IntoElement + 'static> RenderOnce for ModifiedElement<V> {
                     container = container.max_h(px(max_h));
                 }
 
-                // In SwiftUI, frame causes the child to fill the frame
-                // We wrap the child in a size_full div to achieve this
-                let stretched_child = div().size_full().child(child);
-
-                // Apply alignment via flex
                 let container = container.flex();
                 let container = frame.alignment.horizontal.apply_as_justify(container);
                 let container = frame.alignment.vertical.apply_as_items(container);
-
-                container.child(stretched_child)
+                container.child(child)
             }
             ModifierKind::Hidden(is_hidden) => {
                 if is_hidden {

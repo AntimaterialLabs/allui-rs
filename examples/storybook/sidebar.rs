@@ -1,7 +1,7 @@
+use allui::prelude::*;
 use gpui::{div, prelude::*, px, Context, SharedString};
 use gpui_component::scroll::ScrollableElement;
 use gpui_component::theme::ActiveTheme;
-use allui::prelude::*;
 
 use crate::stories::{component_stories, container_stories, grid_stories, layout_stories, Story};
 use crate::{Storybook, ThemePreference};

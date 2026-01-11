@@ -4,9 +4,10 @@
 //! including support for sections with headers and footers.
 
 use gpui::{
-    div, px, App, InteractiveElement, IntoElement, ParentElement, RenderOnce, SharedString,
-    StatefulInteractiveElement, Styled, Window,
+    div, px, App, InteractiveElement, IntoElement, ParentElement, RenderOnce, SharedString, Styled,
+    Window,
 };
+use gpui_component::scroll::ScrollableElement;
 
 use crate::modifier::Modifier;
 use crate::style::Color;
@@ -98,32 +99,21 @@ impl Modifier for List {}
 
 impl RenderOnce for List {
     fn render(self, _window: &mut Window, _cx: &mut App) -> impl IntoElement {
-        let mut container = div()
+        let base = div()
             .id(self.id)
             .size_full()
+            .min_h_0()
             .flex()
             .flex_col()
-            .overflow_y_scroll();
+            .gap(px(24.0));
 
-        // Apply style-specific styling
-        match self.style {
-            ListStyle::Automatic | ListStyle::Plain => {
-                // Plain appearance - no extra styling
-            }
-            ListStyle::InsetGrouped | ListStyle::Grouped => {
-                // Add padding for grouped appearance
-                container = container.p(px(16.0));
-            }
-            ListStyle::Sidebar => {
-                // Sidebar typically has different padding
-                container = container.p(px(8.0));
-            }
-        }
+        let base = match self.style {
+            ListStyle::Automatic | ListStyle::Plain => base,
+            ListStyle::InsetGrouped | ListStyle::Grouped => base.p(px(16.0)),
+            ListStyle::Sidebar => base.p(px(8.0)),
+        };
 
-        // Add spacing between children (sections)
-        container = container.gap(px(24.0));
-
-        container.children(self.children)
+        base.overflow_y_scrollbar().children(self.children)
     }
 }
 

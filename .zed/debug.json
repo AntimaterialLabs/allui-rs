@@ -1,0 +1,16 @@
+[
+  {
+    "label": "Debug storybook",
+    "adapter": "CodeLLDB",
+    "request": "launch",
+    "program": "target/debug/examples/storybook",
+    "preLaunchTask": "cargo build"
+  },
+  {
+    "label": "Debug storybook (release)",
+    "adapter": "CodeLLDB",
+    "request": "launch",
+    "program": "target/release/examples/storybook",
+    "preLaunchTask": "cargo build --release"
+  }
+]

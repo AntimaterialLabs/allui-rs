@@ -1,5 +1,5 @@
-use gpui::{prelude::*, Context, Entity};
 use allui::prelude::*;
+use gpui::{prelude::*, Context, Entity};
 
 use crate::Storybook;
 
