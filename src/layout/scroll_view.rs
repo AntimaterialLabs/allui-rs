@@ -1,9 +1,10 @@
 //! ScrollView - Scrollable container.
 
 use gpui::{
-    div, App, InteractiveElement, IntoElement, ParentElement, RenderOnce, SharedString,
-    StatefulInteractiveElement, Styled, Window,
+    App, InteractiveElement, IntoElement, ParentElement, RenderOnce, SharedString,
+    StatefulInteractiveElement, Styled, Window, div,
 };
+use gpui_component::scroll::ScrollableElement;
 
 use crate::modifier::Modifier;
 
@@ -92,23 +93,34 @@ impl Modifier for ScrollView {}
 
 impl RenderOnce for ScrollView {
     fn render(self, _window: &mut Window, _cx: &mut App) -> impl IntoElement {
-        // Create a stateful div for scrolling
-        let mut container = div().id(self.id).size_full().flex();
+        let base = div().id(self.id).size_full().flex();
 
-        // Apply flex direction and scroll behavior based on axes
-        container = match self.axes {
-            ScrollAxes::Vertical => container.flex_col().overflow_y_scroll(),
-            ScrollAxes::Horizontal => container.flex_row().overflow_x_scroll(),
-            ScrollAxes::Both => container.flex_col().overflow_scroll(),
-        };
-
-        // GPUI doesn't have direct control over scroll indicator visibility
-        // but we store the setting for future use
-        if !self.shows_indicators {
-            // Future: container = container.scrollbar_width(px(0.))
+        match (self.axes, self.shows_indicators) {
+            (ScrollAxes::Vertical, true) => base
+                .flex_col()
+                .overflow_y_scrollbar()
+                .children(self.children)
+                .into_any_element(),
+            (ScrollAxes::Vertical, false) => base
+                .flex_col()
+                .overflow_y_scroll()
+                .children(self.children)
+                .into_any_element(),
+            (ScrollAxes::Horizontal, true) => base
+                .flex_row()
+                .overflow_x_scrollbar()
+                .children(self.children)
+                .into_any_element(),
+            (ScrollAxes::Horizontal, false) => base
+                .flex_row()
+                .overflow_x_scroll()
+                .children(self.children)
+                .into_any_element(),
+            (ScrollAxes::Both, _) => base
+                .flex_col()
+                .overflow_scroll()
+                .children(self.children)
+                .into_any_element(),
         }
-
-        // Add children
-        container.children(self.children)
     }
 }
