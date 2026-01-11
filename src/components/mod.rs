@@ -28,7 +28,7 @@ pub use image::Image;
 pub use label::Label;
 pub use link::Link;
 pub use progress_view::{ProgressView, ProgressViewStyle};
-pub use text::Text;
+pub use text::{Text, TruncationMode};
 
 // Input exports
 pub use picker::{

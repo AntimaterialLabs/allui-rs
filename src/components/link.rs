@@ -1,8 +1,8 @@
 //! Link - Tappable text that triggers an action.
 
 use gpui::{
-    div, App, InteractiveElement, IntoElement, ParentElement, RenderOnce, SharedString,
-    StatefulInteractiveElement, Styled, Window,
+    App, InteractiveElement, IntoElement, ParentElement, RenderOnce, SharedString,
+    StatefulInteractiveElement, Styled, Window, div,
 };
 use gpui_component::ActiveTheme;
 

@@ -1,10 +1,10 @@
 //! ProgressView - Progress indicator.
 
 use gpui::{
-    div, px, relative, rgb, App, IntoElement, ParentElement, RenderOnce, SharedString, Styled,
-    Window,
+    App, IntoElement, ParentElement, RenderOnce, SharedString, Styled, Window, div, px, relative,
+    rgb,
 };
-use gpui_component::{spinner::Spinner, ActiveTheme};
+use gpui_component::{ActiveTheme, spinner::Spinner};
 
 use crate::modifier::Modifier;
 use crate::style::Color;

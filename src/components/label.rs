@@ -1,6 +1,6 @@
 //! Label - Text with icon.
 
-use gpui::{div, px, App, IntoElement, ParentElement, RenderOnce, SharedString, Styled, Window};
+use gpui::{App, IntoElement, ParentElement, RenderOnce, SharedString, Styled, Window, div, px};
 use gpui_component::{ActiveTheme, Icon, IconName};
 
 use crate::modifier::Modifier;

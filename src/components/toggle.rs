@@ -3,8 +3,8 @@
 //! A SwiftUI-style toggle that wraps gpui-component's Switch.
 
 use gpui::{App, IntoElement, RenderOnce, SharedString, Window};
-use gpui_component::switch::Switch;
 use gpui_component::Disableable;
+use gpui_component::switch::Switch;
 
 use crate::modifier::Modifier;
 

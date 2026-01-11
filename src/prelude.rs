@@ -17,6 +17,7 @@ pub use crate::layout::{
 // Display components
 pub use crate::components::{
     Button, ButtonStyle, Divider, Image, Label, Link, ProgressView, ProgressViewStyle, Text,
+    TruncationMode,
 };
 
 // Re-export IconName from gpui-component for Label::with_icon

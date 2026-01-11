@@ -1,6 +1,6 @@
 //! Divider - Visual separator line.
 
-use gpui::{div, px, rgb, App, IntoElement, RenderOnce, Styled, Window};
+use gpui::{App, IntoElement, RenderOnce, Styled, Window, div, px, rgb};
 use gpui_component::ActiveTheme;
 
 use crate::modifier::Modifier;
