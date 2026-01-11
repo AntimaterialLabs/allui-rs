@@ -6,6 +6,18 @@ use gpui_component::ActiveTheme;
 use crate::modifier::Modifier;
 use crate::style::{Color, Font, FontWeight};
 
+/// How text is truncated when it doesn't fit in its container.
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
+pub enum TruncationMode {
+    /// Truncate at the head of the line, replacing removed text with an ellipsis.
+    Head,
+    /// Truncate at the tail of the line, replacing removed text with an ellipsis.
+    #[default]
+    Tail,
+    /// Truncate in the middle of the line, replacing removed text with an ellipsis.
+    Middle,
+}
+
 /// A view that displays one or more lines of read-only text.
 ///
 /// # Example
@@ -21,6 +33,7 @@ pub struct Text {
     font: Option<Font>,
     color: Option<Color>,
     line_limit: Option<usize>,
+    truncation_mode: TruncationMode,
     strikethrough: bool,
 }
 
@@ -32,6 +45,7 @@ impl Text {
             font: None,
             color: None,
             line_limit: None,
+            truncation_mode: TruncationMode::default(),
             strikethrough: false,
         }
     }
@@ -51,6 +65,12 @@ impl Text {
     /// Limit the number of lines.
     pub fn line_limit(mut self, limit: usize) -> Self {
         self.line_limit = Some(limit);
+        self
+    }
+
+    /// Set how text is truncated when it doesn't fit.
+    pub fn truncation_mode(mut self, mode: TruncationMode) -> Self {
+        self.truncation_mode = mode;
         self
     }
 
@@ -124,9 +144,14 @@ impl RenderOnce for Text {
             element = element.text_color(color.resolve(is_dark));
         }
 
-        // Apply line limit
+        // Apply line limit with truncation for proper ellipsis in flex layouts
         if let Some(limit) = self.line_limit {
-            element = element.line_clamp(limit);
+            element = element
+                .line_clamp(limit)
+                .flex_shrink()
+                .min_w_0()
+                .overflow_hidden()
+                .text_ellipsis();
         }
 
         // Apply strikethrough

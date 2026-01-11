@@ -61,7 +61,14 @@ impl Modifier for HStack {}
 
 impl RenderOnce for HStack {
     fn render(self, _window: &mut Window, _cx: &mut App) -> impl IntoElement {
-        let container = div().flex().flex_row().gap(px(self.spacing));
+        // w_full() matches SwiftUI behavior when Spacer is used - stacks become "filling" views.
+        // overflow_hidden() establishes containing block for child truncation to work.
+        let container = div()
+            .flex()
+            .flex_row()
+            .w_full()
+            .overflow_hidden()
+            .gap(px(self.spacing));
         self.alignment
             .apply_as_items(container)
             .children(self.children)
