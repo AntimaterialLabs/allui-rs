@@ -29,7 +29,7 @@
 //! Slider::new(&self.volume_slider)
 //! ```
 
-use gpui::{App, Entity, IntoElement, Pixels, RenderOnce, Styled, Window, px};
+use gpui::{px, App, Entity, IntoElement, Pixels, RenderOnce, Styled, Window};
 use gpui_component::slider::Slider as GpuiSlider;
 
 // Re-export SliderState for users

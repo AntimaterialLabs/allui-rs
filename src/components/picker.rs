@@ -32,17 +32,17 @@
 //!     .placeholder("Select theme...")
 //! ```
 
-use gpui::{App, Entity, IntoElement, Pixels, RenderOnce, SharedString, Styled, Window, px};
+use gpui::{px, App, Entity, IntoElement, Pixels, RenderOnce, SharedString, Styled, Window};
 use gpui_component::select::{Select, SelectDelegate, SelectState};
 
 // Re-export types for users
-pub use gpui_component::IndexPath;
 pub use gpui_component::select::SearchableVec;
 pub use gpui_component::select::SelectDelegate as PickerDelegate;
 pub use gpui_component::select::SelectEvent as PickerEvent;
 pub use gpui_component::select::SelectGroup as PickerGroup;
 pub use gpui_component::select::SelectItem as PickerItem;
 pub use gpui_component::select::SelectState as PickerState;
+pub use gpui_component::IndexPath;
 
 use crate::modifier::Modifier;
 

@@ -1,6 +1,6 @@
 //! Text - Display text content.
 
-use gpui::{App, IntoElement, ParentElement, RenderOnce, SharedString, Styled, Window, div, px};
+use gpui::{div, px, App, IntoElement, ParentElement, RenderOnce, SharedString, Styled, Window};
 use gpui_component::ActiveTheme;
 
 use crate::modifier::Modifier;

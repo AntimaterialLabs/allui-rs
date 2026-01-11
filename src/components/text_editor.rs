@@ -25,7 +25,7 @@
 //! TextEditor::new(&self.notes_input)
 //! ```
 
-use gpui::{App, Entity, IntoElement, Pixels, RenderOnce, Window, px};
+use gpui::{px, App, Entity, IntoElement, Pixels, RenderOnce, Window};
 use gpui_component::input::Input;
 
 // Use InputState from text_field module

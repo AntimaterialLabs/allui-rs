@@ -1,6 +1,6 @@
 //! VStack - Vertical stack layout.
 
-use gpui::{App, IntoElement, ParentElement, RenderOnce, Styled, Window, div, px};
+use gpui::{div, px, App, IntoElement, ParentElement, RenderOnce, Styled, Window};
 
 use crate::alignment::HorizontalAlignment;
 use crate::modifier::Modifier;

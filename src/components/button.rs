@@ -1,8 +1,8 @@
 //! Button - Interactive button component.
 
 use gpui::{
-    App, InteractiveElement, IntoElement, ParentElement, RenderOnce, SharedString,
-    StatefulInteractiveElement, Styled, Window, div, px, rgb,
+    div, px, rgb, App, InteractiveElement, IntoElement, ParentElement, RenderOnce, SharedString,
+    StatefulInteractiveElement, Styled, Window,
 };
 
 use crate::modifier::Modifier;

@@ -1,6 +1,6 @@
 //! HStack - Horizontal stack layout.
 
-use gpui::{App, IntoElement, ParentElement, RenderOnce, Styled, Window, div, px};
+use gpui::{div, px, App, IntoElement, ParentElement, RenderOnce, Styled, Window};
 
 use crate::alignment::VerticalAlignment;
 use crate::modifier::Modifier;

@@ -1,6 +1,6 @@
 //! Image - Display images.
 
-use gpui::{App, IntoElement, ParentElement, RenderOnce, Styled, Window, div, px, rgb};
+use gpui::{div, px, rgb, App, IntoElement, ParentElement, RenderOnce, Styled, Window};
 
 use crate::modifier::{ContentMode, Modifier};
 

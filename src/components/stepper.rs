@@ -29,8 +29,8 @@
 //! ```
 
 use gpui::{App, Entity, IntoElement, RenderOnce, Window};
-use gpui_component::Disableable;
 use gpui_component::input::NumberInput;
+use gpui_component::Disableable;
 
 // Re-use InputState from text_field
 use super::text_field::InputState;
