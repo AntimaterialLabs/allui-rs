@@ -169,20 +169,6 @@ impl RenderOnce for List {
             row_spacing
         };
 
-        let mut base = div()
-            .id(self.id)
-            .size_full()
-            .min_h_0()
-            .flex()
-            .flex_col()
-            .gap(px(effective_gap));
-
-        base = match self.style {
-            ListStyle::Automatic | ListStyle::Plain => base,
-            ListStyle::InsetGrouped | ListStyle::Grouped => base.p(px(16.0)),
-            ListStyle::Sidebar => base.p(px(8.0)),
-        };
-
         let children: Vec<AnyElement> = self
             .children
             .into_iter()
@@ -194,7 +180,20 @@ impl RenderOnce for List {
             })
             .collect();
 
-        base.children(children).overflow_y_scrollbar()
+        let mut content = div().flex().flex_col().gap(px(effective_gap));
+
+        content = match self.style {
+            ListStyle::Automatic | ListStyle::Plain => content,
+            ListStyle::InsetGrouped | ListStyle::Grouped => content.p(px(16.0)),
+            ListStyle::Sidebar => content.p(px(8.0)),
+        };
+
+        div()
+            .id(self.id)
+            .size_full()
+            .min_h_0()
+            .overflow_y_scrollbar()
+            .child(content.children(children))
     }
 }
 
