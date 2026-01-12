@@ -26,13 +26,18 @@
 //! TextField::new(&self.email_input)
 //! ```
 
-use gpui::{App, Entity, IntoElement, RenderOnce, Window};
+use gpui::{
+    px, App, Entity, Hsla, InteractiveElement, IntoElement, ParentElement, RenderOnce,
+    StatefulInteractiveElement, Styled, Window,
+};
+use gpui_component::h_flex;
 use gpui_component::input::Input;
+use gpui_component::{ActiveTheme, Icon, IconName};
 
-// Re-export InputState for users
 pub use gpui_component::input::InputState;
 
 use crate::modifier::Modifier;
+use crate::style::Color;
 
 /// A single-line text input field.
 ///
@@ -86,8 +91,44 @@ impl TextField {
 impl Modifier for TextField {}
 
 impl RenderOnce for TextField {
-    fn render(self, _window: &mut Window, _cx: &mut App) -> impl IntoElement {
-        let mut input = Input::new(&self.state).cleanable(self.cleanable);
+    fn render(self, _window: &mut Window, cx: &mut App) -> impl IntoElement {
+        let is_dark = cx.theme().is_dark();
+        let bg_color = Color::text_field_background().resolve(is_dark);
+        let border_color = Color::text_field_border().resolve(is_dark);
+
+        let mut input = Input::new(&self.state)
+            .bg(bg_color)
+            .border_color(border_color);
+
+        if self.cleanable {
+            let has_text = self.state.read(cx).text().len() > 0;
+            if has_text {
+                let state = self.state.clone();
+                let icon_color = Hsla {
+                    a: 0.5,
+                    ..cx.theme().foreground
+                };
+                let hover_bg = Hsla {
+                    a: 0.1,
+                    ..cx.theme().foreground
+                };
+                let clear_button = h_flex()
+                    .id("clear-input")
+                    .items_center()
+                    .justify_center()
+                    .p(px(2.0))
+                    .rounded(px(4.0))
+                    .cursor_pointer()
+                    .hover(|s| s.bg(hover_bg))
+                    .child(Icon::new(IconName::Close).size_4().text_color(icon_color))
+                    .on_click(move |_, window, cx| {
+                        state.update(cx, |state, cx| {
+                            state.set_value("", window, cx);
+                        });
+                    });
+                input = input.suffix(clear_button);
+            }
+        }
 
         if self.disabled {
             input = input.disabled(true);

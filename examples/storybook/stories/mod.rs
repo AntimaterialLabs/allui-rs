@@ -12,7 +12,6 @@ pub use containers::*;
 pub use grids::*;
 pub use layout::*;
 
-/// All available stories in the storybook.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub enum Story {
     #[default]
@@ -31,6 +30,7 @@ pub enum Story {
     DisplayComponents,
     ScrollView,
     List,
+    ListConfig,
     ForEach,
     Conditional,
     Grid,
@@ -39,13 +39,11 @@ pub enum Story {
     BothAxesScroll,
 }
 
-/// Story metadata for sidebar organization.
 pub struct StoryInfo {
     pub name: &'static str,
     pub story: Story,
 }
 
-/// Get all stories grouped by tier.
 pub fn layout_stories() -> &'static [StoryInfo] {
     &[
         StoryInfo {
@@ -117,6 +115,10 @@ pub fn container_stories() -> &'static [StoryInfo] {
         StoryInfo {
             name: "List",
             story: Story::List,
+        },
+        StoryInfo {
+            name: "List Config",
+            story: Story::ListConfig,
         },
         StoryInfo {
             name: "ForEach",

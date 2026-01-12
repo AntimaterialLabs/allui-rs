@@ -60,7 +60,7 @@ impl Modifier for VStack {}
 
 impl RenderOnce for VStack {
     fn render(self, _window: &mut Window, _cx: &mut App) -> impl IntoElement {
-        let container = div().flex().flex_col().w_full().gap(px(self.spacing));
+        let container = div().flex().flex_col().gap(px(self.spacing));
         self.alignment
             .apply_as_items(container)
             .children(self.children)

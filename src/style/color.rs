@@ -28,6 +28,10 @@ pub enum SemanticColor {
     Separator,
     /// Opaque separator
     OpaqueSeparator,
+    /// TextField background color
+    TextFieldBackground,
+    /// TextField border color
+    TextFieldBorder,
 }
 
 impl SemanticColor {
@@ -66,6 +70,14 @@ impl SemanticColor {
 
             (SemanticColor::OpaqueSeparator, false) => Color::static_rgb(0.78, 0.78, 0.8).hsla,
             (SemanticColor::OpaqueSeparator, true) => Color::static_hex(0x38383a).hsla,
+
+            (SemanticColor::TextFieldBackground, false) => Color::static_rgb(1.0, 1.0, 1.0).hsla,
+            (SemanticColor::TextFieldBackground, true) => {
+                Color::static_rgb(0.118, 0.118, 0.118).hsla
+            }
+
+            (SemanticColor::TextFieldBorder, false) => Color::static_rgb(0.85, 0.85, 0.85).hsla,
+            (SemanticColor::TextFieldBorder, true) => Color::static_rgb(0.247, 0.247, 0.247).hsla,
         }
     }
 }
@@ -367,6 +379,20 @@ impl Color {
         Self {
             hsla: SemanticColor::OpaqueSeparator.resolve(false),
             semantic: Some(SemanticColor::OpaqueSeparator),
+        }
+    }
+
+    pub fn text_field_background() -> Self {
+        Self {
+            hsla: SemanticColor::TextFieldBackground.resolve(false),
+            semantic: Some(SemanticColor::TextFieldBackground),
+        }
+    }
+
+    pub fn text_field_border() -> Self {
+        Self {
+            hsla: SemanticColor::TextFieldBorder.resolve(false),
+            semantic: Some(SemanticColor::TextFieldBorder),
         }
     }
 

@@ -51,6 +51,7 @@ mod lazy_hgrid;
 mod lazy_stack;
 mod lazy_vgrid;
 mod list;
+mod list_types;
 mod scroll_view;
 mod spacer;
 mod vstack;
@@ -68,7 +69,11 @@ pub use lazy_stack::{
     calculate_item_sizes, uniform_size, LazyHStack, LazyVStack, VirtualListScrollHandle,
 };
 pub use lazy_vgrid::LazyVGrid;
-pub use list::{List, ListStyle, Section};
+pub use list::{List, ListStyle, Section, SectionRow};
+pub use list_types::{
+    EdgeInsets, EdgeInsetsExt, EdgeSet, ListConfiguration, ListSectionSpacing, RowConfiguration,
+    SectionMargins,
+};
 pub use scroll_view::{ScrollAxes, ScrollView};
 pub use spacer::Spacer;
 pub use vstack::VStack;
