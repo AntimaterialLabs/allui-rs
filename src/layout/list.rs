@@ -169,6 +169,8 @@ impl RenderOnce for List {
             row_spacing
         };
 
+        let default_insets = self.default_row_insets;
+
         let children: Vec<AnyElement> = self
             .children
             .into_iter()
@@ -176,7 +178,19 @@ impl RenderOnce for List {
                 ListChild::Section(section) => {
                     section.with_list_config(config.clone()).into_any_element()
                 }
-                ListChild::Element(element) => element,
+                ListChild::Element(element) => {
+                    if let Some(insets) = default_insets {
+                        div()
+                            .pt(px(insets.top))
+                            .pb(px(insets.bottom))
+                            .pl(px(insets.leading))
+                            .pr(px(insets.trailing))
+                            .child(element)
+                            .into_any_element()
+                    } else {
+                        element
+                    }
+                }
             })
             .collect();
 
