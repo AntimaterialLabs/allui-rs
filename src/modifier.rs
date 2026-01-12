@@ -79,7 +79,7 @@ struct StyledContainerElement<V: IntoElement + 'static> {
 impl<V: IntoElement + 'static> RenderOnce for StyledContainerElement<V> {
     fn render(self, _window: &mut Window, cx: &mut App) -> impl IntoElement {
         let is_dark = cx.theme().is_dark();
-        let mut container = div().size_full().min_h_0().min_w_0();
+        let mut container = div();
 
         if let Some(color) = self.container.background {
             container = container.bg(color.resolve(is_dark));
@@ -691,31 +691,21 @@ impl<V: IntoElement + 'static> RenderOnce for ModifiedElement<V> {
 
         // Apply the modifier by wrapping the child in a container
         match self.modified.modifier {
-            ModifierKind::Padding(padding) => {
-                // Padding wrapper stretches to fill parent so flex children work
-                div()
-                    .flex_grow()
-                    .pt(px(padding.top))
-                    .pb(px(padding.bottom))
-                    .pl(px(padding.leading))
-                    .pr(px(padding.trailing))
-                    .child(child)
-            }
+            ModifierKind::Padding(padding) => div()
+                .pt(px(padding.top))
+                .pb(px(padding.bottom))
+                .pl(px(padding.leading))
+                .pr(px(padding.trailing))
+                .child(child),
 
             ModifierKind::Foreground(color) => {
-                // Resolve semantic colors based on current theme
-                div()
-                    .flex_grow()
-                    .text_color(color.resolve(is_dark))
-                    .child(child)
+                div().text_color(color.resolve(is_dark)).child(child)
             }
-            ModifierKind::CornerRadius(radius) => div()
-                .flex_grow()
-                .rounded(px(radius))
-                .overflow_hidden()
-                .child(child),
+            ModifierKind::CornerRadius(radius) => {
+                div().rounded(px(radius)).overflow_hidden().child(child)
+            }
             ModifierKind::Border { color, width } => {
-                let container = div().size_full().border_color(color.resolve(is_dark));
+                let container = div().border_color(color.resolve(is_dark));
                 let container = if width <= 1.0 {
                     container.border_1()
                 } else if width <= 2.0 {
@@ -733,8 +723,6 @@ impl<V: IntoElement + 'static> RenderOnce for ModifiedElement<V> {
                 x: _,
                 y: _,
             } => {
-                // GPUI has shadow_sm, shadow_md, shadow_lg, etc.
-                // TODO: Use color, x, y when GPUI supports custom shadows
                 let container = if radius <= 2.0 {
                     div().shadow_sm()
                 } else if radius <= 4.0 {
@@ -744,35 +732,57 @@ impl<V: IntoElement + 'static> RenderOnce for ModifiedElement<V> {
                 } else {
                     div().shadow_xl()
                 };
-                container.flex_grow().child(child)
+                container.child(child)
             }
-            ModifierKind::Opacity(value) => div().flex_grow().opacity(value).child(child),
+            ModifierKind::Opacity(value) => div().opacity(value).child(child),
             ModifierKind::Frame(frame) => {
                 let mut container = div();
+                let mut has_width_constraint = false;
+                let mut has_height_constraint = false;
 
                 if let Some(w) = frame.width {
                     container = container.w(px(w));
+                    has_width_constraint = true;
                 }
                 if let Some(h) = frame.height {
                     container = container.h(px(h));
+                    has_height_constraint = true;
                 }
                 if let Some(min_w) = frame.min_width {
                     container = container.min_w(px(min_w));
                 }
                 if let Some(max_w) = frame.max_width {
-                    container = container.max_w(px(max_w));
+                    if max_w.is_infinite() {
+                        container = container.w_full();
+                    } else {
+                        container = container.max_w(px(max_w));
+                    }
+                    has_width_constraint = true;
                 }
                 if let Some(min_h) = frame.min_height {
                     container = container.min_h(px(min_h));
                 }
                 if let Some(max_h) = frame.max_height {
-                    container = container.max_h(px(max_h));
+                    if max_h.is_infinite() {
+                        container = container.h_full();
+                    } else {
+                        container = container.max_h(px(max_h));
+                    }
+                    has_height_constraint = true;
                 }
 
                 let container = container.flex();
                 let container = frame.alignment.horizontal.apply_as_justify(container);
                 let container = frame.alignment.vertical.apply_as_items(container);
-                container.child(child)
+
+                let mut child_wrapper = div();
+                if has_width_constraint {
+                    child_wrapper = child_wrapper.w_full();
+                }
+                if has_height_constraint {
+                    child_wrapper = child_wrapper.h_full();
+                }
+                container.child(child_wrapper.child(child))
             }
             ModifierKind::Hidden(is_hidden) => {
                 if is_hidden {

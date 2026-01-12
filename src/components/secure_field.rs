@@ -26,13 +26,13 @@
 //!     .show_toggle(true)  // Optional: show reveal button
 //! ```
 
-use gpui::{App, Entity, IntoElement, RenderOnce, Window};
+use gpui::{App, Entity, IntoElement, RenderOnce, Styled, Window};
 use gpui_component::input::Input;
+use gpui_component::ActiveTheme;
 
-// Use InputState from text_field module
 use super::text_field::InputState;
-
 use crate::modifier::Modifier;
+use crate::style::Color;
 
 /// A secure text input field for passwords.
 ///
@@ -86,8 +86,14 @@ impl SecureField {
 impl Modifier for SecureField {}
 
 impl RenderOnce for SecureField {
-    fn render(self, _window: &mut Window, _cx: &mut App) -> impl IntoElement {
-        let mut input = Input::new(&self.state);
+    fn render(self, _window: &mut Window, cx: &mut App) -> impl IntoElement {
+        let is_dark = cx.theme().is_dark();
+        let bg_color = Color::text_field_background().resolve(is_dark);
+        let border_color = Color::text_field_border().resolve(is_dark);
+
+        let mut input = Input::new(&self.state)
+            .bg(bg_color)
+            .border_color(border_color);
 
         if self.show_toggle {
             input = input.mask_toggle();

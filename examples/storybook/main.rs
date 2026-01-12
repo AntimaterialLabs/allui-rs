@@ -136,22 +136,21 @@ impl Storybook {
     }
 
     fn render_content(&self, cx: &mut Context<Self>) -> impl IntoElement {
-        div()
-            .id("content-scroll")
-            .flex()
-            .flex_col()
-            .flex_1()
-            .min_h_0()
-            .overflow_y_scroll()
-            .p_4()
-            .gap_4()
+        ScrollView::new("content-scroll")
+            .axes(ScrollAxes::vertical())
             .child(
-                div()
-                    .text_xl()
-                    .font_weight(gpui::FontWeight::BOLD)
-                    .child(format!("{:?}", self.selected_story)),
+                VStack::new()
+                    .spacing(16.0)
+                    .alignment(HorizontalAlignment::Leading)
+                    .child(
+                        Text::new(format!("{:?}", self.selected_story))
+                            .font(Font::title())
+                            .font_weight(FontWeight::Bold),
+                    )
+                    .child(self.render_story(cx))
+                    .padding(16.0)
+                    .frame(Frame::fill_width().alignment(Alignment::top_leading())),
             )
-            .child(self.render_story(cx))
     }
 
     fn render_story(&self, cx: &mut Context<Self>) -> gpui::AnyElement {
@@ -221,31 +220,33 @@ impl Render for Storybook {
 }
 
 fn main() {
-    Application::new().run(|cx: &mut App| {
-        gpui_component::init(cx);
+    Application::new()
+        .with_assets(gpui_component_assets::Assets)
+        .run(|cx: &mut App| {
+            gpui_component::init(cx);
 
-        let bounds = Bounds::centered(None, size(px(1000.0), px(700.0)), cx);
+            let bounds = Bounds::centered(None, size(px(1000.0), px(700.0)), cx);
 
-        cx.open_window(
-            WindowOptions {
-                window_bounds: Some(WindowBounds::Windowed(bounds)),
-                ..Default::default()
-            },
-            |window, cx| {
-                cx.bind_keys([
-                    gpui::KeyBinding::new("cmd-q", Quit, None),
-                    gpui::KeyBinding::new("cmd-w", CloseWindow, None),
-                ]);
+            cx.open_window(
+                WindowOptions {
+                    window_bounds: Some(WindowBounds::Windowed(bounds)),
+                    ..Default::default()
+                },
+                |window, cx| {
+                    cx.bind_keys([
+                        gpui::KeyBinding::new("cmd-q", Quit, None),
+                        gpui::KeyBinding::new("cmd-w", CloseWindow, None),
+                    ]);
 
-                let storybook = cx.new(|cx| {
-                    let storybook = Storybook::new(window, cx);
-                    storybook.focus_handle.focus(window);
-                    storybook
-                });
+                    let storybook = cx.new(|cx| {
+                        let storybook = Storybook::new(window, cx);
+                        storybook.focus_handle.focus(window);
+                        storybook
+                    });
 
-                cx.new(|cx| Root::new(storybook, window, cx))
-            },
-        )
-        .unwrap();
-    });
+                    cx.new(|cx| Root::new(storybook, window, cx))
+                },
+            )
+            .unwrap();
+        });
 }
