@@ -261,7 +261,6 @@ pub struct Frame {
     pub ideal_height: Option<f32>,
     /// Maximum height constraint. Use `f32::INFINITY` to fill available space.
     pub max_height: Option<f32>,
-    /// Alignment of the child within the frame.
     pub alignment: Alignment,
 }
 
@@ -716,9 +715,7 @@ impl<V: IntoElement + 'static> RenderOnce for ModifiedElement<V> {
                 .overflow_hidden()
                 .child(child),
             ModifierKind::Border { color, width } => {
-                // GPUI uses border_N() methods
-                // Resolve semantic colors based on current theme
-                let container = div().flex_grow().border_color(color.resolve(is_dark));
+                let container = div().size_full().border_color(color.resolve(is_dark));
                 let container = if width <= 1.0 {
                     container.border_1()
                 } else if width <= 2.0 {
@@ -772,10 +769,18 @@ impl<V: IntoElement + 'static> RenderOnce for ModifiedElement<V> {
                     container = container.max_h(px(max_h));
                 }
 
-                let container = container.flex();
-                let container = frame.alignment.horizontal.apply_as_justify(container);
-                let container = frame.alignment.vertical.apply_as_items(container);
-                container.child(child)
+                let has_explicit_alignment = frame.alignment.horizontal
+                    != HorizontalAlignment::Center
+                    || frame.alignment.vertical != VerticalAlignment::Center;
+
+                if has_explicit_alignment {
+                    let container = container.flex();
+                    let container = frame.alignment.horizontal.apply_as_justify(container);
+                    let container = frame.alignment.vertical.apply_as_items(container);
+                    container.child(child)
+                } else {
+                    container.child(child)
+                }
             }
             ModifierKind::Hidden(is_hidden) => {
                 if is_hidden {
