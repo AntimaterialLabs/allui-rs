@@ -170,6 +170,7 @@ impl RenderOnce for List {
         };
 
         let default_insets = self.default_row_insets;
+        let min_row_height = self.min_row_height;
 
         let children: Vec<AnyElement> = self
             .children
@@ -179,14 +180,20 @@ impl RenderOnce for List {
                     section.with_list_config(config.clone()).into_any_element()
                 }
                 ListChild::Element(element) => {
-                    if let Some(insets) = default_insets {
-                        div()
-                            .pt(px(insets.top))
-                            .pb(px(insets.bottom))
-                            .pl(px(insets.leading))
-                            .pr(px(insets.trailing))
-                            .child(element)
-                            .into_any_element()
+                    let needs_wrapper = default_insets.is_some() || min_row_height.is_some();
+                    if needs_wrapper {
+                        let mut wrapper = div();
+                        if let Some(insets) = default_insets {
+                            wrapper = wrapper
+                                .pt(px(insets.top))
+                                .pb(px(insets.bottom))
+                                .pl(px(insets.leading))
+                                .pr(px(insets.trailing));
+                        }
+                        if let Some(min_h) = min_row_height {
+                            wrapper = wrapper.min_h(px(min_h));
+                        }
+                        wrapper.child(element).into_any_element()
                     } else {
                         element
                     }
