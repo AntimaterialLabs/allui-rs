@@ -769,18 +769,10 @@ impl<V: IntoElement + 'static> RenderOnce for ModifiedElement<V> {
                     container = container.max_h(px(max_h));
                 }
 
-                let has_explicit_alignment = frame.alignment.horizontal
-                    != HorizontalAlignment::Center
-                    || frame.alignment.vertical != VerticalAlignment::Center;
-
-                if has_explicit_alignment {
-                    let container = container.flex();
-                    let container = frame.alignment.horizontal.apply_as_justify(container);
-                    let container = frame.alignment.vertical.apply_as_items(container);
-                    container.child(child)
-                } else {
-                    container.child(child)
-                }
+                let container = container.flex();
+                let container = frame.alignment.horizontal.apply_as_justify(container);
+                let container = frame.alignment.vertical.apply_as_items(container);
+                container.child(child)
             }
             ModifierKind::Hidden(is_hidden) => {
                 if is_hidden {
