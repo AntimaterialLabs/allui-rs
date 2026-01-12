@@ -79,7 +79,7 @@ struct StyledContainerElement<V: IntoElement + 'static> {
 impl<V: IntoElement + 'static> RenderOnce for StyledContainerElement<V> {
     fn render(self, _window: &mut Window, cx: &mut App) -> impl IntoElement {
         let is_dark = cx.theme().is_dark();
-        let mut container = div().size_full().min_h_0().min_w_0().overflow_hidden();
+        let mut container = div().size_full().min_h_0().min_w_0();
 
         if let Some(color) = self.container.background {
             container = container.bg(color.resolve(is_dark));
